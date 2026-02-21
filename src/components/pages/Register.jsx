@@ -3,109 +3,133 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../../assets/services/api";
 
 const Register = () => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+    });
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        if (password !== confirmPassword) {
+        setError("");
+
+        if (formData.password !== formData.confirmPassword) {
             setError("Passwords do not match");
             return;
         }
+
+        setLoading(true);
         try {
-            await API.post("/register", { name, email, password, password_confirmation: confirmPassword });
+            await API.post("/register", {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                password_confirmation: formData.confirmPassword
+            });
+            alert("Account created! Please login.");
             navigate("/login");
         } catch (err) {
             console.error("Registration error:", err);
-            if (err.response && err.response.data) {
-                // Handle Laravel validation errors or generic message
-                const apiError = err.response.data;
-                if (apiError.errors) {
-                    // Combine all error messages
-                    const messages = Object.values(apiError.errors).flat().join(", ");
-                    setError(messages);
-                } else {
-                    setError(apiError.message || "Registration failed. Please try again.");
-                }
-            } else {
-                setError("Network error or server unreachable.");
-            }
+            setError("Registration failed. Please check your details or try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-[calc(100vh-80px)] bg-gradient-to-br from-[#f5f7fa] to-[#c3cfe2] p-8">
-            <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-sm">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center">Create Account</h2>
-                <p className="text-gray-500 text-center mb-8 text-sm">Sign up to get started</p>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            <div className="absolute top-0 -left-10 w-72 h-72 bg-indigo-100 rounded-full blur-3xl opacity-50 -z-10"></div>
+            <div className="absolute bottom-0 -right-10 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-50 -z-10"></div>
 
-                {error && <div className="mb-4 text-red-500 text-center text-sm">{error}</div>}
-
-                <form className="space-y-5" onSubmit={handleRegister}>
-                    <div className="space-y-2">
-                        <label htmlFor="name" className="block font-medium text-gray-700 text-sm">Full Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="John Doe"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition"
-                            required
-                        />
+            <div className="max-w-md w-full">
+                <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-10 backdrop-blur-sm bg-white/90">
+                    <div className="text-center mb-10">
+                        <h2 className="text-4xl font-black text-gray-900 mb-2">Create Account</h2>
+                        <p className="text-gray-500 font-medium">Join our community today</p>
                     </div>
 
-                    <div className="space-y-2">
-                        <label htmlFor="email" className="block font-medium text-gray-700 text-sm">Email Address</label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="name@company.com"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition"
-                            required
-                        />
-                    </div>
+                    {error && (
+                        <div className="mb-6 p-4 rounded-xl bg-red-50 text-red-600 text-sm font-medium border border-red-100">
+                            {error}
+                        </div>
+                    )}
 
-                    <div className="space-y-2">
-                        <label htmlFor="password" className="block font-medium text-gray-700 text-sm">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition"
-                            required
-                        />
-                    </div>
+                    <form className="space-y-4" onSubmit={handleRegister}>
+                        <div className="space-y-1">
+                            <label className="text-sm font-bold text-gray-700 ml-1">Full Name</label>
+                            <input
+                                name="name"
+                                type="text"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="John Doe"
+                                className="w-full px-5 py-3.5 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition outline-none bg-gray-50/50"
+                                required
+                            />
+                        </div>
 
-                    <div className="space-y-2">
-                        <label htmlFor="confirmPassword" className="block font-medium text-gray-700 text-sm">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition"
-                            required
-                        />
-                    </div>
+                        <div className="space-y-1">
+                            <label className="text-sm font-bold text-gray-700 ml-1">Email Address</label>
+                            <input
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="example@mail.com"
+                                className="w-full px-5 py-3.5 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition outline-none bg-gray-50/50"
+                                required
+                            />
+                        </div>
 
-                    <button type="submit" className="w-full py-3.5 bg-indigo-600 text-white rounded-lg font-semibold text-base hover:bg-indigo-700 transition duration-200">
-                        Sign up
-                    </button>
-                </form>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-gray-700 ml-1">Password</label>
+                                <input
+                                    name="password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="w-full px-5 py-3.5 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition outline-none bg-gray-50/50"
+                                    required
+                                />
+                            </div>
 
-                <p className="text-center text-sm text-gray-500 mt-6">
-                    Already have an account? <Link to="/login" className="text-indigo-600 font-semibold hover:text-indigo-500">Sign in</Link>
-                </p>
+                            <div className="space-y-1">
+                                <label className="text-sm font-bold text-gray-700 ml-1">Confirm</label>
+                                <input
+                                    name="confirmPassword"
+                                    type="password"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    className="w-full px-5 py-3.5 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition outline-none bg-gray-50/50"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-indigo-600 text-white font-black py-4 mt-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-600/30 transform active:scale-95 disabled:opacity-70"
+                        >
+                            {loading ? "Creating Account..." : "Sign Up"}
+                        </button>
+                    </form>
+
+                    <p className="text-center text-sm text-gray-500 mt-10 font-medium">
+                        Already have an account? <Link to="/login" className="text-indigo-600 font-bold hover:underline">Sign In</Link>
+                    </p>
+                </div>
             </div>
         </div>
     );
