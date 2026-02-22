@@ -4,11 +4,7 @@ import API from "../../assets/services/api";
 
 const Profile = () => {
     const [user, setUser] = useState(null);
-    const [orders, setOrders] = useState([
-        // Mock data for initial UI feel
-        { id: 701, created_at: "2026-02-21T08:00:00Z", total_price: 8000000, status: "Diproses", item: "RTX 5050 8GB VENTUS" },
-        { id: 698, created_at: "2026-02-15T12:30:00Z", total_price: 850000, status: "Selesai", item: "mi band" }
-    ]);
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("account"); // 'account' or 'orders'
     const navigate = useNavigate();
@@ -21,22 +17,14 @@ const Profile = () => {
                 setUser(userRes.data);
 
                 // Fetch Orders (Actual API)
-                try {
-                    const orderRes = await API.get("/orders");
-                    const fetchedOrders = orderRes.data.data || orderRes.data || [];
-                    if (fetchedOrders.length > 0) {
-                        setOrders(fetchedOrders);
-                    }
-                } catch (orderErr) {
-                    console.warn("Orders API not ready, using mock data");
-                }
+                const orderRes = await API.get("/orders");
+                // The API might return { data: [...] } or just [...] depending on Laravel's response style
+                const apiOrders = orderRes.data.data || orderRes.data || [];
+                setOrders(apiOrders);
             } catch (err) {
                 console.error("Failed to load profile:", err);
-                // Fallback for demo if API is not running
-                setUser({ name: "Demo User", email: "user@example.com" });
-                // if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-                //     navigate("/login");
-                // }
+                // Simple fallback to keep UI functional but show error
+                setUser({ name: "User", email: "..." });
             } finally {
                 setLoading(false);
             }
@@ -73,24 +61,24 @@ const Profile = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 py-6 sm:py-12 px-2 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto">
                 <div className="bg-white rounded-sm shadow-2xl overflow-hidden border border-slate-100">
                     {/* Profile Header */}
-                    <div className="bg-slate-900 px-8 py-16 text-white relative">
+                    <div className="bg-slate-900 px-4 sm:px-8 py-10 sm:py-16 text-white relative">
                         <div className="absolute top-0 left-0 w-full h-1 bg-white/10"></div>
                         <div className="flex flex-col md:flex-row items-center gap-6">
-                            <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-3xl font-bold border-4 border-white/30">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold border-4 border-white/30">
                                 {user?.name?.charAt(0) || "U"}
                             </div>
                             <div className="text-center md:text-left">
-                                <h1 className="text-3xl font-extrabold">{user?.name}</h1>
-                                <p className="text-indigo-100 opacity-90">{user?.email}</p>
+                                <h1 className="text-2xl sm:text-3xl font-extrabold">{user?.name}</h1>
+                                <p className="text-sm sm:text-base text-indigo-100 opacity-90">{user?.email}</p>
                             </div>
-                            <div className="md:ml-auto">
+                            <div className="w-full md:w-auto md:ml-auto">
                                 <button
                                     onClick={handleLogout}
-                                    className="bg-white/10 hover:bg-white text-white hover:text-slate-900 px-8 py-3 rounded-sm transition border border-white/20 font-black text-[10px] uppercase tracking-widest"
+                                    className="w-full md:w-auto bg-white/10 hover:bg-white text-white hover:text-slate-900 px-8 py-3 rounded-sm transition border border-white/20 font-black text-[10px] uppercase tracking-widest"
                                 >
                                     LOGOUT STORE
                                 </button>
@@ -99,17 +87,17 @@ const Profile = () => {
                     </div>
 
                     {/* Navigation Tabs */}
-                    <div className="flex border-b border-gray-100 px-8 bg-gray-50/50">
+                    <div className="flex flex-wrap border-b border-gray-100 px-4 sm:px-8 bg-gray-50/50">
                         <button
                             onClick={() => setActiveTab("account")}
-                            className={`px-8 py-5 font-black text-[10px] transition-all relative uppercase tracking-widest ${activeTab === "account" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
+                            className={`flex-1 sm:flex-none px-4 sm:px-8 py-4 sm:py-5 font-black text-[10px] transition-all relative uppercase tracking-widest ${activeTab === "account" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
                         >
                             ACCOUNT DETAILS
                             {activeTab === "account" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-900 font-black"></div>}
                         </button>
                         <button
                             onClick={() => setActiveTab("orders")}
-                            className={`px-8 py-5 font-black text-[10px] transition-all relative uppercase tracking-widest ${activeTab === "orders" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
+                            className={`flex-1 sm:flex-none px-4 sm:px-8 py-4 sm:py-5 font-black text-[10px] transition-all relative uppercase tracking-widest ${activeTab === "orders" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
                         >
                             PURCHASE HISTORY
                             {activeTab === "orders" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-900"></div>}
@@ -117,19 +105,19 @@ const Profile = () => {
                     </div>
 
                     {/* Content Section */}
-                    <div className="p-8 sm:p-10">
+                    <div className="p-4 sm:p-10">
                         {activeTab === "account" ? (
                             <div className="max-w-2xl animate-fadeIn">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Settings</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Profile Settings</h2>
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div className="space-y-1">
-                                            <span className="text-xs font-bold text-gray-400 uppercase">Full Name</span>
-                                            <p className="text-lg font-medium text-gray-800">{user?.name}</p>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Full Name</span>
+                                            <p className="text-base sm:text-lg font-medium text-gray-800">{user?.name}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <span className="text-xs font-bold text-gray-400 uppercase">Email</span>
-                                            <p className="text-lg font-medium text-gray-800">{user?.email}</p>
+                                            <span className="text-[10px] font-bold text-gray-400 uppercase">Email</span>
+                                            <p className="text-base sm:text-lg font-medium text-gray-800">{user?.email}</p>
                                         </div>
                                     </div>
                                     <div className="pt-10 border-t border-slate-100">
@@ -139,7 +127,7 @@ const Profile = () => {
                             </div>
                         ) : (
                             <div className="animate-fadeIn">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Orders</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Recent Orders</h2>
                                 {orders.length === 0 ? (
                                     <div className="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                                         <p className="text-gray-500 mb-4">You haven't ordered anything yet.</p>
@@ -161,7 +149,11 @@ const Profile = () => {
                                                 {orders.map((order) => (
                                                     <tr key={order.id} className="hover:bg-gray-50/50 transition">
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">#{order.id}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">{order.item || "Unknown Product"}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                                                            {order.items && order.items.length > 0
+                                                                ? order.items[0].product?.name
+                                                                : (order.item || "Product Removed")}
+                                                        </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(order.created_at).toLocaleDateString()}</td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
                                                             {formatPrice(order.total_price || 0)}

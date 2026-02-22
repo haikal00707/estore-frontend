@@ -9,6 +9,7 @@ import ProductDetail from "./components/pages/ProductDetail";
 import AddProduct from "./components/pages/AddProduct";
 import EditProduct from "./components/pages/EditProduct";
 import AdminDashboard from "./components/pages/AdminDashboard";
+import Payment from "./components/pages/Payment";
 import "./App.css";
 
 // Protection Wrapper
@@ -41,6 +42,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/payment" element={<Payment />} />
 
             {/* Admin Routes (Protected) */}
             <Route

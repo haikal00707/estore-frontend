@@ -50,10 +50,10 @@ const Register = () => {
             <div className="absolute bottom-0 -right-10 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-50 -z-10"></div>
 
             <div className="max-w-md w-full">
-                <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-10 backdrop-blur-sm bg-white/90">
+                <div className="bg-white rounded-sm shadow-2xl border border-gray-100 p-8 sm:p-10 backdrop-blur-sm bg-white/90">
                     <div className="text-center mb-10">
-                        <h2 className="text-4xl font-black text-gray-900 mb-2">Create Account</h2>
-                        <p className="text-gray-500 font-medium">Join our community today</p>
+                        <h2 className="text-2xl sm:text-4xl font-black text-gray-900 mb-2 uppercase tracking-[0.1em]">Create Account</h2>
+                        <p className="text-sm text-gray-500 font-medium">Join our community today</p>
                     </div>
 
                     {error && (

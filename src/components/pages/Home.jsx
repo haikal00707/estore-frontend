@@ -32,13 +32,13 @@ function Home() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Hero Section */}
-            <section className="bg-slate-900 text-white py-24 px-4 relative overflow-hidden">
+            <section className="bg-slate-900 text-white py-16 md:py-24 px-4 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 pointer-events-none">
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(71,85,105,0.4),transparent_70%)]"></div>
                 </div>
                 <div className="max-w-7xl mx-auto text-center relative z-10">
-                    <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight">ELEVATE YOUR STYLE</h1>
-                    <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-xl mx-auto font-medium">Curated collection of premium products. Minimalist design, maximum impact.</p>
+                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 tracking-tight uppercase">ELEVATE YOUR STYLE</h1>
+                    <p className="text-base md:text-xl text-slate-300 mb-10 max-w-xl mx-auto font-medium">Curated collection of premium products. Minimalist design, maximum impact.</p>
                     <Link to="/shop" className="inline-block bg-white text-slate-900 font-extrabold py-4 px-10 rounded-sm hover:bg-slate-100 transition shadow-2xl transform active:scale-95 duration-200 tracking-widest text-sm uppercase">Shop Collection</Link>
                 </div>
             </section>

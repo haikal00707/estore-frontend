@@ -43,11 +43,9 @@ function Shop() {
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-20 gap-8">
-                    <h1 className="text-3xl font-black text-slate-900 uppercase tracking-[0.2em]">Shop Collection</h1>
-
-                    {/* Search Bar */}
-                    <div className="relative w-full md:w-96">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-12 md:mb-20 gap-8">
+                    <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-[0.2em] text-center md:text-left">Shop Collection</h1>
+                    <div className="relative w-full md:w-80 lg:w-96">
                         <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             🔍
                         </span>

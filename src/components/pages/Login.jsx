@@ -56,10 +56,10 @@ const Login = () => {
             <div className="absolute top-0 left-0 w-full h-1 bg-slate-900"></div>
 
             <div className="max-w-md w-full">
-                <div className="bg-white rounded-sm shadow-2xl border border-slate-100 p-12">
-                    <div className="text-center mb-12">
-                        <h2 className="text-2xl font-black text-slate-900 mb-2 uppercase tracking-[0.2em]">Access Account</h2>
-                        <p className="text-gray-500 font-medium">Please sign in to your store account</p>
+                <div className="bg-white rounded-sm shadow-2xl border border-slate-100 p-8 sm:p-12">
+                    <div className="text-center mb-10 md:mb-12">
+                        <h2 className="text-xl sm:text-2xl font-black text-slate-900 mb-2 uppercase tracking-[0.2em]">Access Account</h2>
+                        <p className="text-sm font-medium text-gray-500">Please sign in to your store account</p>
                     </div>
 
                     {error && (

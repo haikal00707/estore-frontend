@@ -98,17 +98,17 @@ function EditProduct() {
     if (loading) return <div className="min-h-screen flex items-center justify-center font-bold text-gray-400">Loading Product Data...</div>;
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 py-6 sm:py-12 px-2 sm:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
                 <button
                     onClick={() => navigate("/admin")}
-                    className="mb-8 flex items-center text-slate-600 font-bold hover:text-slate-900 transition text-[10px] uppercase tracking-widest"
+                    className="mb-8 flex items-center text-slate-600 font-bold hover:text-slate-900 transition text-[10px] uppercase tracking-widest pl-2"
                 >
                     <span className="mr-2 text-lg">←</span> Hubungi Inventory
                 </button>
 
-                <div className="bg-white rounded-sm shadow-2xl border border-slate-100 p-10 sm:p-12">
-                    <h1 className="text-2xl font-black text-slate-900 mb-12 text-center uppercase tracking-[0.2em]">Update Item</h1>
+                <div className="bg-white rounded-sm shadow-2xl border border-slate-100 p-6 sm:p-12">
+                    <h1 className="text-xl sm:text-2xl font-black text-slate-900 mb-10 sm:mb-12 text-center uppercase tracking-[0.2em]">Update Item</h1>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
