@@ -1,13 +1,16 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API from "../../assets/services/api";
+import { useCart } from "../../context/CartContext";
 
 function ProductDetail() {
+    const { addToCart } = useCart();
     const { id } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
     const [product, setProduct] = useState(location.state?.product || null);
     const [loading, setLoading] = useState(!product);
+    const [isAdded, setIsAdded] = useState(false);
 
     useEffect(() => {
         if (!product) {
@@ -35,20 +38,20 @@ function ProductDetail() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-slate-900"></div>
             </div>
         );
     }
 
     if (!product) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h2>
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 text-center">
+                <h2 className="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tight">Product Not Found</h2>
                 <button
                     onClick={() => navigate("/")}
-                    className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+                    className="bg-slate-900 text-white px-10 py-4 font-black transition text-xs uppercase tracking-[0.3em] hover:bg-black shadow-xl shadow-slate-900/10"
                 >
-                    Back to Home
+                    Back to Shop
                 </button>
             </div>
         );
@@ -61,7 +64,7 @@ function ProductDetail() {
                     onClick={() => navigate("/")}
                     className="mb-8 flex items-center text-slate-600 font-bold hover:text-slate-900 transition text-[10px] uppercase tracking-widest"
                 >
-                    <span className="mr-2 text-lg">←</span> Batal Pencarian Item
+                    BACK TO SHOP
                 </button>
 
                 <div className="bg-white rounded-sm shadow-2xl border border-slate-100 overflow-hidden flex flex-col lg:flex-row">
@@ -102,15 +105,27 @@ function ProductDetail() {
                             </p>
                         </div>
 
-                        <div className="mt-auto space-y-4">
+                        <div className="mt-auto flex flex-col sm:flex-row gap-4">
                             <button
-                                onClick={() => navigate("/payment", { state: { product } })}
-                                className="w-full bg-slate-900 text-white font-black py-5 rounded-sm hover:bg-black transition shadow-2xl shadow-slate-900/20 text-xs uppercase tracking-[0.3em]"
+                                onClick={async () => {
+                                    const success = await addToCart(product.id, 1);
+                                    if (success) {
+                                        setIsAdded(true);
+                                        setTimeout(() => setIsAdded(false), 2000);
+                                    }
+                                }}
+                                className={`flex-1 font-black py-5 rounded-sm transition text-xs uppercase tracking-[0.3em] ${isAdded ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-900 border-2 border-slate-900 hover:bg-slate-50'}`}
                             >
-                                LANJUTKAN TRANSAKSI
+                                {isAdded ? "ADDED TO BAG!" : "ADD TO BAG"}
                             </button>
-                            <button className="w-full bg-white text-slate-400 border border-slate-200 font-bold py-4 rounded-sm hover:bg-slate-50 transition text-[10px] uppercase tracking-widest">
-                                Add to Wishlist
+                            <button
+                                onClick={async () => {
+                                    const success = await addToCart(product.id, 1);
+                                    if (success) navigate("/payment");
+                                }}
+                                className="flex-1 bg-slate-900 text-white font-black py-5 rounded-sm hover:bg-black transition shadow-2xl shadow-slate-900/20 text-xs uppercase tracking-[0.3em]"
+                            >
+                                BUY NOW
                             </button>
                         </div>
                     </div>

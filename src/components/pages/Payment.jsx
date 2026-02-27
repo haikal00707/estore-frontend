@@ -1,33 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../../assets/services/api";
+import { useCart } from "../../context/CartContext";
 
 function Payment() {
-    const location = useLocation();
+    const { cart, clearCart } = useCart();
     const navigate = useNavigate();
-    const product = location.state?.product;
     const [selectedMethod, setSelectedMethod] = useState("");
     const [loading, setLoading] = useState(false);
 
-    if (!product) {
+    if (!cart || !cart.items || cart.items.length === 0) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">No product selected for payment</h2>
+                <h2 className="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tight">Your Bag is Empty</h2>
+                <p className="text-slate-500 mb-8 text-[10px] uppercase tracking-widest text-center">You need to add items to your bag before proceeding to payment.</p>
                 <button
-                    onClick={() => navigate("/profile")}
-                    className="bg-slate-900 text-white px-6 py-2 rounded-sm hover:bg-black transition"
+                    onClick={() => navigate("/shop")}
+                    className="bg-slate-900 text-white px-10 py-4 font-black transition text-xs uppercase tracking-[0.3em] hover:bg-black"
                 >
-                    Back to Home
+                    Back to Shop
                 </button>
             </div>
         );
     }
 
+    const subtotal = cart.items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
     const paymentMethods = [
-        { id: "bca", name: "BCA Virtual Account", icon: "🏦" },
-        { id: "mandiri", name: "Mandiri Transfer", icon: "🏢" },
-        { id: "gopay", name: "GoPay / QRIS", icon: "📱" },
-        { id: "ovo", name: "OVO Cash", icon: "💜" },
+        { id: "bca", name: "BCA Virtual Account", label: "BANK" },
+        { id: "mandiri", name: "Mandiri Transfer", label: "BANK" },
+        { id: "gopay", name: "GoPay / QRIS", label: "E-WALLET" },
+        { id: "ovo", name: "OVO Cash", label: "E-WALLET" },
     ];
 
     const formatPrice = (price) => {
@@ -44,29 +47,18 @@ function Payment() {
             return;
         }
 
-        const newOrder = {
-            id: Math.floor(Math.random() * 900) + 100,
-            created_at: new Date().toISOString(),
-            total_price: product.price,
-            payment_method: selectedMethod,
-            status: "Menunggu Konfirmasi",
-            item: product.name
-        };
-
         setLoading(true);
         try {
-            // Real API call to create order
             await API.post("/orders", {
-                address: "Demo Address", // In a real app, this would come from a form
+                address: "Demo Address",
                 payment_method: selectedMethod,
-                items: [
-                    {
-                        product_id: product.id,
-                        quantity: 1,
-                    }
-                ]
+                items: cart.items.map(item => ({
+                    product_id: item.product_id,
+                    quantity: item.quantity
+                }))
             });
 
+            clearCart();
             alert("Pesanan Diterima! Silakan transfer sesuai instruksi. Admin akan segera mengkonfirmasi pembayaran Anda. Anda bisa mengecek status pesanan di halaman Profil.");
             navigate("/profile");
         } catch (err) {
@@ -100,36 +92,40 @@ function Payment() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Summary Section */}
                     <div className="bg-white rounded-sm shadow-2xl border border-slate-100 p-8 sm:p-10">
-                        <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Order Summary</h2>
-                        <div className="flex gap-4 mb-8">
-                            <div className="w-24 h-24 bg-gray-100 rounded-sm overflow-hidden flex-shrink-0">
-                                <img
-                                    src={product.image?.startsWith('http') ? product.image : (product.image_url || `https://via.placeholder.com/200x200?text=${product.name}`)}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-tight mb-1">{product.name}</h3>
-                                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">
-                                    {product.category?.name || "Premium Item"}
-                                </p>
-                                <p className="text-xl font-bold text-slate-900">{formatPrice(product.price)}</p>
-                            </div>
+                        <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-50 pb-4">Bag Summary</h2>
+                        <div className="space-y-6 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {cart.items.map((item) => (
+                                <div key={item.id} className="flex gap-4 pb-4 border-b border-slate-50 last:border-0 last:pb-0">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-sm overflow-hidden flex-shrink-0">
+                                        <img
+                                            src={item.product.image || `https://via.placeholder.com/100x100?text=${item.product.name}`}
+                                            alt={item.product.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="flex-grow">
+                                        <h3 className="text-xs font-black text-slate-900 uppercase tracking-tight mb-1">{item.product.name}</h3>
+                                        <div className="flex justify-between items-center mt-1">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">QTY: {item.quantity}</p>
+                                            <p className="text-xs font-bold text-slate-900">{formatPrice(item.product.price * item.quantity)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
 
-                        <div className="border-t border-slate-100 pt-6">
+                        <div className="border-t-2 border-slate-900 pt-6">
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Subtotal</span>
-                                <span className="font-bold text-slate-900">{formatPrice(product.price)}</span>
+                                <span className="font-bold text-slate-900">{formatPrice(subtotal)}</span>
                             </div>
                             <div className="flex justify-between items-center mb-6">
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Admin Fee</span>
-                                <span className="font-bold text-green-600 text-xs uppercase tracking-widest">Free for Demo</span>
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Process Fee</span>
+                                <span className="font-bold text-green-600 text-[10px] uppercase tracking-widest">FREE</span>
                             </div>
                             <div className="flex justify-between items-center border-t border-slate-100 pt-6">
-                                <span className="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Total Amount</span>
-                                <span className="text-2xl font-black text-slate-900">{formatPrice(product.price)}</span>
+                                <span className="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Grand Total</span>
+                                <span className="text-2xl font-black text-slate-900">{formatPrice(subtotal)}</span>
                             </div>
                         </div>
                     </div>
@@ -149,7 +145,7 @@ function Payment() {
                                         }`}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <span className="text-2xl">{method.icon}</span>
+                                        <span className="text-[9px] font-black bg-slate-100 px-2 py-1 rounded-sm text-slate-400 uppercase tracking-widest">{method.label}</span>
                                         <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">{method.name}</span>
                                     </div>
                                     <div className={`w-4 h-4 rounded-full border-2 ${selectedMethod === method.id

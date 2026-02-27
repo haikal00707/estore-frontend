@@ -78,9 +78,9 @@ const Profile = () => {
                             <div className="w-full md:w-auto md:ml-auto">
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full md:w-auto bg-white/10 hover:bg-white text-white hover:text-slate-900 px-8 py-3 rounded-sm transition border border-white/20 font-black text-[10px] uppercase tracking-widest"
+                                    className="w-full flex items-center justify-center gap-2 bg-white text-red-500 border border-red-100 font-black py-4 rounded-sm hover:bg-red-50 transition text-xs uppercase tracking-[0.2em] shadow-sm"
                                 >
-                                    LOGOUT STORE
+                                    LOGOUT FROM ACCOUNT
                                 </button>
                             </div>
                         </div>

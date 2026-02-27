@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 function Navbar() {
     const location = useLocation();
     const navigate = useNavigate();
     const isLoggedIn = !!localStorage.getItem("token");
     const userRole = localStorage.getItem("role");
+    const { cart } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const cartCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -38,6 +42,18 @@ function Navbar() {
                     </div>
 
                     <div className="hidden md:flex items-center gap-6">
+                        {isLoggedIn && (
+                            <div className="flex items-center gap-6 mr-4 border-r border-white/10 pr-6">
+                                <Link to="/cart" className="relative text-gray-400 hover:text-white transition group flex items-center gap-2" title="Shopping Bag">
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Bag</span>
+                                    {cartCount > 0 && (
+                                        <span className="bg-white text-gray-900 text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center">
+                                            {cartCount}
+                                        </span>
+                                    )}
+                                </Link>
+                            </div>
+                        )}
                         {isLoggedIn ? (
                             <div className="flex items-center gap-4">
                                 <Link
@@ -48,10 +64,10 @@ function Navbar() {
                                 </Link>
                                 <button
                                     onClick={handleLogout}
-                                    className="p-2 text-white/20 hover:text-white transition grayscale"
+                                    className="px-4 py-2 text-white/40 hover:text-red-500 transition text-[9px] font-black uppercase tracking-widest"
                                     title="Logout"
                                 >
-                                    🚪
+                                    Logout
                                 </button>
                             </div>
                         ) : (
@@ -108,6 +124,16 @@ function Navbar() {
                             Admin Dashboard
                         </Link>
                     )}
+                    {isLoggedIn && (
+                        <Link
+                            to="/cart"
+                            onClick={() => setIsMenuOpen(false)}
+                            className={`flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] py-2 ${location.pathname === "/cart" ? "text-white" : "text-gray-400"}`}
+                        >
+                            <span>Shopping Bag</span>
+                            {cartCount > 0 && <span className="bg-white text-gray-900 px-2 py-0.5 rounded-full text-[8px]">{cartCount}</span>}
+                        </Link>
+                    )}
                     <hr className="border-white/5" />
                     {isLoggedIn ? (
                         <div className="space-y-4 pt-2">
@@ -120,9 +146,9 @@ function Navbar() {
                             </Link>
                             <button
                                 onClick={handleLogout}
-                                className="block w-full text-left text-[10px] font-black uppercase tracking-[0.2em] py-2 text-red-400"
+                                className="block w-full text-left text-[10px] font-black uppercase tracking-[0.2em] py-2 text-red-500"
                             >
-                                Logout 🚪
+                                Logout
                             </button>
                         </div>
                     ) : (

@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../../assets/services/api";
+import { useCart } from "../../context/CartContext";
 
 function Shop() {
+    const navigate = useNavigate();
+    const { addToCart } = useCart();
     const [allProducts, setAllProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
+    const [isAdding, setIsAdding] = useState(null);
 
     useEffect(() => {
         setLoading(true);
@@ -45,16 +49,13 @@ function Shop() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row justify-between items-center mb-12 md:mb-20 gap-8">
                     <h1 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-[0.2em] text-center md:text-left">Shop Collection</h1>
-                    <div className="relative w-full md:w-80 lg:w-96">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                            🔍
-                        </span>
+                    <div className="relative w-full md:w-80 lg:w-96 text-center">
                         <input
                             type="text"
                             placeholder="SEARCH COLLECTION..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 rounded-sm border border-slate-200 focus:ring-4 focus:ring-slate-500/5 focus:border-slate-900 transition outline-none shadow-sm text-xs font-bold tracking-widest uppercase"
+                            className="w-full px-6 py-4 rounded-sm border border-slate-200 focus:ring-4 focus:ring-slate-500/5 focus:border-slate-900 transition outline-none shadow-sm text-xs font-bold tracking-widest uppercase"
                         />
                     </div>
                 </div>
@@ -72,13 +73,23 @@ function Shop() {
                                 </div>
                                 <div className="p-8 flex flex-col flex-grow">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">{product.category?.name || "General"}</span>
-                                    <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-2">{product.name}</h3>
+                                    <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-2 uppercase tracking-tight">{product.name}</h3>
                                     <p className="text-sm font-medium text-slate-500 mb-6">{formatPrice(product.price)}</p>
-                                    <div className="mt-auto">
+                                    <div className="mt-auto space-y-2">
+                                        <button
+                                            onClick={async () => {
+                                                setIsAdding(product.id);
+                                                const success = await addToCart(product.id, 1);
+                                                setTimeout(() => setIsAdding(null), 2000);
+                                            }}
+                                            className={`block w-full font-black py-4 rounded-sm transition tracking-[0.2em] text-[10px] uppercase shadow-lg shadow-slate-900/10 ${isAdding === product.id ? 'bg-green-600 text-white' : 'bg-slate-900 text-white hover:bg-black'}`}
+                                        >
+                                            {isAdding === product.id ? 'Added!' : 'Add to Bag'}
+                                        </button>
                                         <Link
                                             to={`/product/${product.id}`}
                                             state={{ product }}
-                                            className="block w-full bg-slate-900 text-white text-center font-bold py-3 rounded-sm hover:bg-slate-800 transition tracking-widest text-[10px] uppercase"
+                                            className="block w-full bg-white text-slate-400 border border-slate-100 text-center font-bold py-3 rounded-sm hover:bg-slate-50 transition tracking-widest text-[9px] uppercase"
                                         >
                                             View Details
                                         </Link>
@@ -88,9 +99,8 @@ function Shop() {
                         ))
                     ) : (
                         <div className="col-span-full text-center py-20">
-                            <div className="text-5xl mb-4">🛒</div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-1">No products found</h3>
-                            <p className="text-gray-500">Try searching for something else!</p>
+                            <h3 className="text-xl font-bold text-gray-900 mb-1 uppercase tracking-widest">No products found</h3>
+                            <p className="text-gray-500 text-[10px] uppercase tracking-widest">Try searching for something else!</p>
                         </div>
                     )}
                 </div>

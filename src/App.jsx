@@ -10,6 +10,8 @@ import AddProduct from "./components/pages/AddProduct";
 import EditProduct from "./components/pages/EditProduct";
 import AdminDashboard from "./components/pages/AdminDashboard";
 import Payment from "./components/pages/Payment";
+import Cart from "./components/pages/Cart";
+import { CartProvider } from "./context/CartContext";
 import "./App.css";
 
 // Protection Wrapper
@@ -31,48 +33,51 @@ const ProtectedRoute = ({ children, roleRequired }) => {
 
 function App() {
   return (
-    <Router>
-      <div className="app-container">
-        <Navbar />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/payment" element={<Payment />} />
+    <CartProvider>
+      <Router>
+        <div className="app-container">
+          <Navbar />
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/cart" element={<Cart />} />
 
-            {/* Admin Routes (Protected) */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute roleRequired="admin">
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/add-product"
-              element={
-                <ProtectedRoute roleRequired="admin">
-                  <AddProduct />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/edit-product/:id"
-              element={
-                <ProtectedRoute roleRequired="admin">
-                  <EditProduct />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+              {/* Admin Routes (Protected) */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute roleRequired="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/add-product"
+                element={
+                  <ProtectedRoute roleRequired="admin">
+                    <AddProduct />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/edit-product/:id"
+                element={
+                  <ProtectedRoute roleRequired="admin">
+                    <EditProduct />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </CartProvider >
   );
 }
 
